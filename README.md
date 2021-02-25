@@ -4,3 +4,5 @@ PPT: https://docs.google.com/presentation/d/1px8OLGjm3PTz_cdLTb3ld5GFNMwpQwFxYKO
 
 In this project we analyze the infrastructure of Australia following the 9.1.1 SDG Indicator.
 
+
+result for australia: [(3869995.74741819, 1528064.42418031)] -> 39,48% reachable with all weather roads -> O.o
