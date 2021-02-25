@@ -1,0 +1,51 @@
+version: '2.4'
+networks:
+    infraustralia_postgres:
+    infraustralia_webserver:
+
+services:
+    infraustralia_postgres:
+        container_name: infraustralia_postgres
+        build:
+            context: postgres/
+        shm_size: 2g
+        environment:
+            POSTGRES_PASSWORD: '${PGPASSWORD}'
+            POSTGRES_USER: 'infraustralia'
+            PGDATABASE: 'infraustralia'
+            PGDATA: '/var/lib/postgresql/infraustralia'
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U infraustralia"]
+          interval: 30s
+          timeout: 30s
+          retries: 1000
+        command: postgres
+        volumes:
+           - ./postgres-data:/var/lib/postgresql/infraustralia
+        restart: unless-stopped
+        ports:
+          - "5434:5437"
+        networks:
+            - infraustralia_postgres
+
+    infraustralia_workers:
+        container_name: infraustralia_workers
+        build:
+            context: python/
+        environment:
+            POSTGRES_HOST: 'infraustralia_postgres'
+            POSTGRES_PORT: 5437
+            POSTGRES_USER: 'infraustralia'
+            PGPASSWORD: '${PGPASSWORD}'
+            PGDATABASE: 'infraustralia'
+            PGDATABASE_HOT_TM: 'hot_tm'
+            PGDATA: '/var/lib/postgresql/infraustralia'
+        depends_on:
+            infraustralia_postgres:
+                condition: service_healthy
+        volumes:
+            - ./infraustralia-data/:/root/.local/share/infraustralia
+        command: infraustralia --verbose run
+        restart: "no"
+        networks:
+            - infraustralia_postgres
