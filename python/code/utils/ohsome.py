@@ -6,10 +6,13 @@ import requests
 from python.code.utils.definitions import OHSOME_API, logger
 
 
-def query(request: Dict, bpolys: str, time: str = None) -> Dict:
+def query(request: Dict, bpolys: str, properties: str = None) -> Dict:
     """Query ohsome API endpoint with filter."""
     url = OHSOME_API + request["endpoint"]
-    data = {"bpolys": bpolys, "filter": request["filter"], "time": time}
+    if properties is not None:
+        data = {"bpolys": bpolys, "filter": request["filter"], "properties": properties}
+    else:
+        data = {"bpolys": bpolys, "filter": request["filter"]}
     logger.info("Query ohsome API.")
     logger.info("Query URL: " + url)
     logger.info("Query Filter: " + request["filter"])

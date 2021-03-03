@@ -1,20 +1,31 @@
 from python.code.utils.ohsome import query
 from python.code.utils.definitions import logger, DATA_PATH
 from python.code.utils.postgres import PostgresDB, geojson_to_table, get_bpolys_from_db
+from python.code.utils.utils import to_json
 import os
 import geojson
-"""landuse in (commercial, construction, industrial, residential, retail, cemetery,
-        garages, depot) 
-        or """
+import json
+import psycopg2
+
 human_settlements = {
+    "description":"Areas which indicate human cities",
     "endpoint": "elements/geometry",
     "filter": """
          (leisure = park or landuse in (residential, 
         commercial, industrial, retail)) and geometry:polygon
     """
 }
+admin_2 = {
+    "description": "admin_2 are usually independent countries",
+    "endpoint": "elements/geometry",
+    "filter":"""
+        admin_level=2 and geometry:polygon and name=* and flag=*
+    """
+}
+
 
 admin_4 = {
+    "description":"Usually administrative regions e.g. german Bundesländer",
     "endpoint": "elements/geometry",
     "filter": """
         admin_level=4 and geometry:polygon
@@ -22,6 +33,7 @@ admin_4 = {
 }
 
 all_weather_roads = {
+    "description":"roads which are usable during every weather condition",
     "endpoint": "elements/geometry",
     "filter": """
         geometry:line 
@@ -37,87 +49,148 @@ all_weather_roads = {
 }
 
 
-def get_ohsome_data(geom_infile, ohsome_outfiles):
-    with open(geom_infile) as infile:
+def get_countries(continent_infile, continent_outfile):
+
+    with open(continent_infile) as infile:
         bpolys = geojson.load(infile)
         if bpolys.is_valid is not True:
             raise ValueError("Invalid bpolys: {}".format(bpolys.errors()))
+
         bpolys = geojson.dumps(bpolys)
+
+    countries = query(request=admin_2, bpolys=bpolys, properties="tags")
+    with open(continent_outfile, 'w') as outfile:
+        geojson.dump(countries, outfile)
+
+    return countries
+
+
+def get_ohsome_data(geom_infile=None, ohsome_outfiles=None, feature=None):
+    if geom_infile is not None:
+        with open(geom_infile) as infile:
+            bpolys = geojson.load(infile)
+            if bpolys.is_valid is not True:
+                raise ValueError("Invalid bpolys: {}".format(bpolys.errors()))
+            bpolys = geojson.dumps(bpolys)
+    else:
+        bpolys = feature
+        with open(os.path.join(DATA_PATH, "area_of_interest/feature.geojson"), "w") as infile:
+
+            geojson.dump(geojson.loads(bpolys), infile)
     admin_areas = query(request=admin_4, bpolys=bpolys)
     logger.info("recieved {} admin_areas".format(len(admin_areas["features"])))
-
+    if len(admin_areas["features"])==0:
+        return False
     counter = 0
     for feature in admin_areas["features"]:
-        feature = geojson.dumps({"type": "FeatureCollection",
-                                 "features": [feature]})
-        #settlements = query(request=human_settlements, bpolys=feature)
-        #logger.info("recieved {} settlement_areas".format(len(settlements["features"])))
-        #with open(ohsome_outfiles[0] + "_{}".format(counter), 'w') as outfile:
-        #    geojson.dump(settlements, outfile)
-        roads = query(request=all_weather_roads, bpolys=feature)
-        logger.info("recieved {} roads".format(len(roads["features"])))
-        with open(ohsome_outfiles[1] + "_{}".format(counter), 'w') as outfile:
-            geojson.dump(roads, outfile)
+        try:
+            feature = geojson.dumps({"type": "FeatureCollection",
+                                     "features": [feature]})
+            settlements = query(request=human_settlements, bpolys=feature)
+            logger.info("recieved {} settlement_areas".format(len(settlements["features"])))
+            if len(settlements["features"]) == 0:
+                continue
+            with open(ohsome_outfiles[0] + "_{}".format(counter), 'w') as outfile:
+                geojson.dump(settlements, outfile)
+            roads = query(request=all_weather_roads, bpolys=feature)
+            logger.info("recieved {} roads".format(len(roads["features"])))
 
-        counter += 1
+            if len(roads["features"]) == 0:
+                continue
+            with open(ohsome_outfiles[1] + "_{}".format(counter), 'w') as outfile:
+                geojson.dump(roads, outfile)
+
+            counter += 1
+        except:
+            logger.info("skipped a feature")
+            continue
 
     return counter
 
 
-def upload_data(ohsome_outfiles, geom_infile, counter):
+def upload_data(ohsome_outfiles, geom_infile, counter, drop_tables: bool):
     settlement_sql = """
-           drop table if exists settlements_aust;
-           create table settlements_aust as (
-           SELECT * FROM {}
-       """.format("settlements_aust_0")
+           drop table if exists settlements;
+           create table settlements as (
+       """
 
     road_sql = """
            drop table if exists all_weather_roads;
            create table all_weather_roads as (
-           SELECT * FROM {}
-       """.format("all_weather_roads_0")
-
+       """
+    valid_areas = []  # necessairy to catch empty or faulty areas
     for x in range(0, counter):
-        geojson_to_table("settlements_aust_{}".format(x), ohsome_outfiles[0] + "_{}".format(x))
-        geojson_to_table("all_weather_roads_{}".format(x), ohsome_outfiles[1] + "_{}".format(x))
-        if x!=counter-1:
-            settlement_sql += """
-                   UNION ALL
-                   SELECT * FROM settlements_aust_{}
-               """.format(x + 1)
-            road_sql += """
-                   UNION ALL
-                   SELECT * FROM all_weather_roads_{}
-               """.format(x + 1)
+        try:
+            geojson_to_table("settlements_{}".format(x), ohsome_outfiles[0] + "_{}".format(x))
+            geojson_to_table("all_weather_roads_{}".format(x), ohsome_outfiles[1] + "_{}".format(x))
+            valid_areas.append(x)
+        except:
+            continue
+    test = False
+    if len(valid_areas) != 0:
+        for x in range(0, len(valid_areas)):
+            if x == 0:
+                settlement_sql += "SELECT * FROM settlements_{}".format(valid_areas[x])
+                road_sql += "SELECT * FROM all_weather_roads_{}".format(valid_areas[x])
+                test=True
+            else:
+                settlement_sql += """
+                       UNION ALL
+                       SELECT * FROM settlements_{}
+                   """.format(valid_areas[x])
+                road_sql += """
+                       UNION ALL
+                       SELECT * FROM all_weather_roads_{}
+                   """.format(valid_areas[x])
+                test = True
+        settlement_sql += ")"
+        road_sql += ")"
+        if test:
+            db = PostgresDB()
+            db.query(settlement_sql)
+            db.query(road_sql)
+            geojson_to_table("feature", geom_infile)
+        else:
+            return False
+    else:
+        return False
 
-    settlement_sql += ")"
-    road_sql += ")"
-
-    db = PostgresDB()
-    db.query(settlement_sql)
-    db.query(road_sql)
-
-    geojson_to_table("australia", geom_infile)
+    if drop_tables:
+        sql = ""
+        for x in range(0, counter):
+            sql += """
+                drop table if exists settlements_{counter};
+                drop table if exists all_weather_roads_{counter};
+            """.format(counter=counter)
+            if os.path.exists(ohsome_outfiles[0]+ "_{}".format(x)):
+                os.remove(ohsome_outfiles[0]+ "_{}".format(x))
+            if os.path.exists(ohsome_outfiles[1]+ "_{}".format(x)):
+                os.remove(ohsome_outfiles[1]+ "_{}".format(x))
+        db.query(sql)
 
     logger.info("uploaded ohsome data")
 
 
-def buffer_and_union_polygons():
+def buffer_and_union_polygons(drop_tables: bool):
     db = PostgresDB()
     sql = """
         drop table if exists combined_polys;
         create table combined_polys as (            
             SELECT (ST_Dump(geom)).geom as geom, ROW_NUMBER() over (order by (Select Null)) as fid
             FROM (SELECT ST_UNION(ST_Transform(public.ST_BUFFER(ST_TRANSFORM(geom, 900913), 2000), 954009)) AS geom
-            FROM settlements_aust) as unioned
+            FROM settlements) as unioned
         )
 
     """
     db.query(sql)
     logger.info("unioned overlapping polys")
 
+    if drop_tables:
+        sql = "drop table if exists settlements;"
+        db.query(sql)
 
-def population_per_city():
+
+def population_per_city(drop_tables: bool):
     db = PostgresDB()
     sql = """
         drop table if exists cities_with_pop;
@@ -130,15 +203,19 @@ def population_per_city():
     db.query(sql)
     logger.info("calculated approx pop per human settlement")
 
+    if drop_tables:
+        sql = "drop table if exists combined_polys;"
+        db.query(sql)
 
-def remove_urban_from_raster():
+
+def remove_urban_from_raster(drop_tables: bool):
     db = PostgresDB()
     sql = """
         drop table if exists rural_pop;
         create table rural_pop as (
             with clip as (
             select ST_Difference(ST_Transform(a.geom, 954009), c.geom) as clipper
-            from (select ST_UNION(geom) as geom from cities_with_pop where pop>=10000) as c, australia as a
+            from (select ST_UNION(geom) as geom from cities_with_pop where pop>=10000) as c, feature as a
             )
             select rid, ST_Clip(rast, clipper) as rast
                     from clip, pop.ghspop
@@ -147,10 +224,14 @@ def remove_urban_from_raster():
     """
 
     db.query(sql)
-    logger.info("got rural australia raster")
+    logger.info("got rural feature raster")
+
+    if drop_tables:
+        sql = "drop table if exists cities_with_pop;"
+        db.query(sql)
 
 
-def buffer_roads():
+def buffer_roads(drop_tables: bool):
     sql = """
     drop table if exists buffered_streets;
     create table buffered_streets as (
@@ -162,8 +243,12 @@ def buffer_roads():
     db.query(sql)
     logger.info("buffered streets")
 
+    if drop_tables:
+        sql = "drop table if exists all_weather_roads;"
+        db.query(sql)
 
-def get_all_reachable_pop():
+
+def get_all_reachable_pop(drop_tables: bool):
     sql = """
     drop table if exists reachable_pop;
     create table reachable_pop as (
@@ -177,7 +262,12 @@ def get_all_reachable_pop():
     db.query(sql)
     logger.info("got reachable pop raster")
 
-def get_share_rural_population_within_2km_of_all_weather_road():
+    if drop_tables:
+        sql = "drop table if exists buffered_streets;"
+        db.query(sql)
+
+
+def get_share_rural_population_within_2km_of_all_weather_road(drop_tables: bool):
     sql = """
         with all_rural_pop as (
         select Sum((ST_SummaryStats(rast)).sum) as all_pop
@@ -192,21 +282,75 @@ def get_share_rural_population_within_2km_of_all_weather_road():
     """
     db = PostgresDB()
     result = db.retr_query(sql)
-    print(result)
-def settlement_workflow():
+
+    if drop_tables:
+        sql = """
+            drop table if exists reachable_pop;
+            drop table if exists rural_pop;
+        """
+        db.query(sql)
+
+    return result[0]
+
+
+def settlement_workflow(continent_workflow: bool = False, drop_tables: bool = False):
+    continent_infile = os.path.join(DATA_PATH, "area_of_interest/africa.geojson")
+    continent_outfile = os.path.join(DATA_PATH, "query_answers/african_countries.geojson")
     geom_infile = os.path.join(DATA_PATH, "area_of_interest/australia.geojson")
-    ohsome_outfiles = [os.path.join(DATA_PATH, "query_answers/settlements_aust.geojson"),
+    ohsome_outfiles = [os.path.join(DATA_PATH, "query_answers/settlements.geojson"),
                        os.path.join(DATA_PATH, "query_answers/all_weather_roads.geojson")]
-    counter=10
-    counter = get_ohsome_data(geom_infile, ohsome_outfiles)
-    upload_data(ohsome_outfiles, geom_infile, counter)
-    buffer_and_union_polygons()
-    population_per_city()
-    remove_urban_from_raster()
-    buffer_roads()
-    get_all_reachable_pop()
-    get_share_rural_population_within_2km_of_all_weather_road()
-settlement_workflow()
+    if continent_workflow:
+        geom_infile=os.path.join(DATA_PATH, "area_of_interest/feature.geojson")
+
+        countries = get_countries(continent_infile, continent_outfile)
+        with open(os.path.join(DATA_PATH, "result.json")) as file:
+            already_done_countries = json.load(file).keys()
+        for feature in countries["features"]:
+            country_name = feature["properties"]["name"]
+
+            if country_name in already_done_countries:  # ohsome API is unstable atm
+                logger.info("Already processed {}".format(country_name))
+                continue
+            feature = geojson.dumps({"type": "FeatureCollection",
+                                     "features": [feature]})
+
+            counter = get_ohsome_data(feature=feature, ohsome_outfiles=ohsome_outfiles)
+            if counter is False:
+                continue
+            not_empty = upload_data(ohsome_outfiles, geom_infile, counter, drop_tables=drop_tables)
+            if not_empty is False:
+                continue
+            try:
+                buffer_and_union_polygons(drop_tables)
+            except psycopg2.OperationalError:
+                logger.info("server issue with {}".format(country_name))
+                continue
+            population_per_city(drop_tables)
+            remove_urban_from_raster(drop_tables)
+            buffer_roads(drop_tables)
+            get_all_reachable_pop(drop_tables)
+            rural_pop, reachable_pop = get_share_rural_population_within_2km_of_all_weather_road(drop_tables)
+            if rural_pop is not None and reachable_pop is not None and rural_pop !=0:
+                result = {
+                    "share_reachable_pop": round((reachable_pop/rural_pop)*100,1),
+                    "rural_pop": rural_pop,
+                    "reachable_pop": reachable_pop
+                }
+            else:
+                result = None
+            to_json("result.json", key=country_name, value=result)
+    else:
+        counter= 10
+        counter = get_ohsome_data(geom_infile=geom_infile, ohsome_outfiles=ohsome_outfiles)
+        upload_data(ohsome_outfiles=ohsome_outfiles, geom_infile=geom_infile, counter=counter, drop_tables=drop_tables)
+        buffer_and_union_polygons(drop_tables)
+        population_per_city(drop_tables)
+        remove_urban_from_raster(drop_tables)
+        buffer_roads(drop_tables)
+        get_all_reachable_pop(drop_tables)
+        result=get_share_rural_population_within_2km_of_all_weather_road(drop_tables)
+        print(result)
+settlement_workflow(continent_workflow=True, drop_tables=True)
 
 def get_table_as_geojson(tablename):
     result =get_bpolys_from_db(tablename)
@@ -214,4 +358,4 @@ def get_table_as_geojson(tablename):
     with open(drop_temp_path, 'w') as outfile:
         geojson.dump(result, outfile)
 
-get_table_as_geojson("rural_pop_2")
+#get_table_as_geojson("rural_pop_2")
