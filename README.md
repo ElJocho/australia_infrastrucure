@@ -7,4 +7,4 @@ In this project we analyze the infrastructure of Australia following the 9.1.1 S
 
 result for australia: [(3869995.74741819, 1528064.42418031)] -> 39,48% reachable with all weather roads -> O.o
 
-![infrastructure workflow](./data/things_for_the_praesi/infrastructure_workflow.svg white "infrastructure workflow")
+ <img src="./data/things_for_the_praesi/infrastructure_workflow.svg" alt="infrastructure workflow" style="background-color: white !important;"> 
