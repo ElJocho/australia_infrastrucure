@@ -9,4 +9,4 @@ result for australia: [(3869995.74741819, 1528064.42418031)] -> 39,48% reachable
 
  <img src="./data/things_for_the_praesi/infrastructure_workflow.svg" alt="infrastructure workflow" style="background-color: white !important;"> 
 
- <embed width="90%“ height=“100%“ type=“application/pdf“ data=“./data/things_for_the_praesi/reachability_africa.pdf“ src=“./data/things_for_the_praesi/reachability_africa.pdf“ ></embed>
+ <iframe src=“./data/things_for_the_praesi/reachability_africa.pdf" width=“90%“ height=“100px“></iframe>
