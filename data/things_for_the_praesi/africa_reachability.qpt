@@ -1,0 +1,142 @@
+<Composer title="africa_reachability" visible="1">
+ <Composition resizeToContentsMarginLeft="0" snapping="0" showPages="1" guidesVisible="1" resizeToContentsMarginTop="0" worldFileMap="{d34748d4-2515-4711-bed7-8246b999961a}" alignmentSnap="1" printResolution="300" paperWidth="297" gridVisible="0" snapGridOffsetX="0" smartGuides="1" snapGridOffsetY="0" resizeToContentsMarginRight="0" snapTolerancePixels="5" printAsRaster="0" generateWorldFile="0" paperHeight="210" numPages="1" snapGridResolution="10" resizeToContentsMarginBottom="0">
+  <symbol alpha="1" clip_to_extent="1" type="fill" name="">
+   <layer pass="0" class="SimpleFill" locked="0">
+    <prop k="border_width_map_unit_scale" v="0,0,0,0,0,0"/>
+    <prop k="color" v="255,255,255,255"/>
+    <prop k="joinstyle" v="miter"/>
+    <prop k="offset" v="0,0"/>
+    <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+    <prop k="offset_unit" v="MM"/>
+    <prop k="outline_color" v="0,0,0,255"/>
+    <prop k="outline_style" v="no"/>
+    <prop k="outline_width" v="0.26"/>
+    <prop k="outline_width_unit" v="MM"/>
+    <prop k="style" v="solid"/>
+   </layer>
+  </symbol>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="&lt;div style=&quot;font-family: Arial, Verdana&quot;>&#xa;&lt;b>SDG Indikator 9.1.1:&lt;/b>&#xa;&#xa;&lt;p>Anteil der ruralen Bevölkerung innerhalb von 2 km einer ganzjährlich befahrbaren Straße&lt;/p&#xa;&lt;/div>" htmlState="2" halign="1">
+   <LabelFont description="MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="105" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="180.189" y="105" visibility="1" zValue="7" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="67.0474" outlineWidth="0.3" excludeFromExports="0" uuid="{dbe0b35e-9341-4ec7-b6ce-08f7cce75989}" height="24.5935" itemRotation="0" frame="false" pagex="180.189">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerScaleBar lineCapStyle="square" style="Single Box" numMapUnitsPerScaleBarUnit="1000" segmentSizeMode="0" alignment="0" numSegments="3" segmentMillimeters="17.673" lineJoinStyle="miter" minBarWidth="50" numUnitsPerSegment="1e+06" units="1" labelBarSpace="3" outlineWidth="0.31" numSegmentsLeft="0" maxBarWidth="150" height="2" boxContentSpace="2" mapId="0" unitLabel="km">
+   <scaleBarFont description="MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0" style=""/>
+   <fillColor alpha="255" red="0" blue="0" green="0"/>
+   <fillColor2 alpha="255" red="255" blue="255" green="255"/>
+   <strokeColor alpha="255" red="0" blue="0" green="0"/>
+   <textColor alpha="255" red="0" blue="0" green="0"/>
+   <ComposerItem pagey="180.473" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="60.5323" y="180.473" visibility="1" zValue="6" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="68.0891" outlineWidth="0.3" excludeFromExports="0" uuid="{da522b73-693a-424e-9e9c-08fa77d023ac}" height="14.488" itemRotation="0" frame="false" pagex="60.5323">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerScaleBar>
+  <ComposerLegend symbolWidth="7" title="" rasterBorderWidth="0" titleAlignment="1" map="0" wmsLegendWidth="50" rasterBorderColor="0,0,0,255" wrapChar="" fontColor="#000000" legendFilterByAtlas="0" columnCount="1" wmsLegendHeight="25" columnSpace="2" symbolHeight="4" equalColumnWidth="0" resizeToContents="1" splitLayer="0" boxSpace="2" rasterBorder="1">
+   <styles>
+    <style marginBottom="2" name="title">
+     <styleFont description="MS Shell Dlg 2,16,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" name="group">
+     <styleFont description="MS Shell Dlg 2,14,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" name="subgroup">
+     <styleFont description="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" name="symbol">
+     <styleFont description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+    <style marginTop="2" marginLeft="2" name="symbolLabel">
+     <styleFont description="MS Shell Dlg 2,12,-1,5,50,0,0,0,0,0" style=""/>
+    </style>
+   </styles>
+   <ComposerItem pagey="26.0188" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="180.189" y="26.0188" visibility="1" zValue="5" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="70.5" outlineWidth="0.3" excludeFromExports="0" uuid="{e05470e4-15e6-4555-8925-bdf28b169fde}" height="47.7" itemRotation="0" frame="false" pagex="180.189">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLegend>
+  <ComposerLabel valign="32" marginX="1" marginY="1" labelText="Autoren: Jochen Stier, Daniel Wagner&#xa;Kartendaten von OSM, © OpenStreetMap-Mitwirkende" htmlState="0" halign="1">
+   <LabelFont description="MS Shell Dlg 2,10,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="180.473" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="180.189" y="180.473" visibility="1" zValue="4" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="89.2285" outlineWidth="0.3" excludeFromExports="0" uuid="{76711533-87a8-4ea9-b67d-efbd4b28ee0a}" height="13.4672" itemRotation="0" frame="false" pagex="180.189">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerLabel valign="128" marginX="0" marginY="0" labelText="Anteil der erreichbaren ruralen Population nach SDG Indikator 9.1.1" htmlState="0" halign="4">
+   <LabelFont description="MS Shell Dlg 2,24,-1,5,50,0,0,0,0,0" style=""/>
+   <FontColor red="0" blue="0" green="0"/>
+   <ComposerItem pagey="7.56913" page="1" id="" lastValidViewScaleFactor="-1" positionMode="0" positionLock="false" x="31.9106" y="7.56913" visibility="1" zValue="3" background="false" transparency="0" frameJoinStyle="miter" blendMode="0" width="256.091" outlineWidth="0.3" excludeFromExports="0" uuid="{8d275adf-a07c-4e40-843a-e090e1237068}" height="14.1152" itemRotation="0" frame="false" pagex="31.9106">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerLabel>
+  <ComposerMap followPreset="false" mapRotation="0" keepLayerSet="false" followPresetName="" id="0" previewMode="Cache" drawCanvasItems="true">
+   <Extent ymin="-39.8946796625858795" xmin="-21.02596148703771917" ymax="40.81735048487727369" xmax="53.96365693543101827"/>
+   <LayerSet/>
+   <Grid/>
+   <ComposerMapGrid rightAnnotationDirection="0" gridFramePenColor="0,0,0,255" show="0" bottomAnnotationPosition="1" annotationPrecision="3" showAnnotation="0" topFrameDivisions="0" uuid="{0e5cf836-0d8a-44e7-a55b-b27e24e1cc51}" leftAnnotationDirection="0" topAnnotationPosition="1" rightAnnotationDisplay="0" offsetX="0" offsetY="0" rightFrameDivisions="0" gridStyle="0" annotationFontColor="0,0,0,255" intervalX="0" gridFrameSideFlags="15" intervalY="0" bottomAnnotationDirection="0" leftAnnotationDisplay="0" leftFrameDivisions="0" frameFillColor1="255,255,255,255" annotationExpression="" frameFillColor2="0,0,0,255" crossLength="3" gridFramePenThickness="0.5" bottomAnnotationDisplay="0" unit="0" topAnnotationDisplay="0" leftAnnotationPosition="1" blendMode="0" gridFrameStyle="0" rightAnnotationPosition="1" gridFrameWidth="2" name="Gitter 1" annotationFormat="0" bottomFrameDivisions="0" topAnnotationDirection="0" frameAnnotationDistance="1">
+    <lineStyle>
+     <symbol alpha="1" clip_to_extent="1" type="line" name="">
+      <layer pass="0" class="SimpleLine" locked="0">
+       <prop k="capstyle" v="square"/>
+       <prop k="customdash" v="5;2"/>
+       <prop k="customdash_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="customdash_unit" v="MM"/>
+       <prop k="draw_inside_polygon" v="0"/>
+       <prop k="joinstyle" v="bevel"/>
+       <prop k="line_color" v="0,0,0,255"/>
+       <prop k="line_style" v="solid"/>
+       <prop k="line_width" v="0"/>
+       <prop k="line_width_unit" v="MM"/>
+       <prop k="offset" v="0"/>
+       <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="offset_unit" v="MM"/>
+       <prop k="use_custom_dash" v="0"/>
+       <prop k="width_map_unit_scale" v="0,0,0,0,0,0"/>
+      </layer>
+     </symbol>
+    </lineStyle>
+    <markerStyle>
+     <symbol alpha="1" clip_to_extent="1" type="marker" name="">
+      <layer pass="0" class="SimpleMarker" locked="0">
+       <prop k="angle" v="0"/>
+       <prop k="color" v="0,0,0,255"/>
+       <prop k="horizontal_anchor_point" v="1"/>
+       <prop k="joinstyle" v="bevel"/>
+       <prop k="name" v="circle"/>
+       <prop k="offset" v="0,0"/>
+       <prop k="offset_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="offset_unit" v="MM"/>
+       <prop k="outline_color" v="0,0,0,255"/>
+       <prop k="outline_style" v="solid"/>
+       <prop k="outline_width" v="0"/>
+       <prop k="outline_width_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="outline_width_unit" v="MM"/>
+       <prop k="scale_method" v="diameter"/>
+       <prop k="size" v="2"/>
+       <prop k="size_map_unit_scale" v="0,0,0,0,0,0"/>
+       <prop k="size_unit" v="MM"/>
+       <prop k="vertical_anchor_point" v="1"/>
+      </layer>
+     </symbol>
+    </markerStyle>
+    <annotationFontProperties description="MS Shell Dlg 2,8.25,-1,5,50,0,0,0,0,0" style=""/>
+   </ComposerMapGrid>
+   <AtlasMap scalingMode="2" atlasDriven="0" margin="0.10000000000000001"/>
+   <ComposerItem pagey="21.6844" page="1" id="" lastValidViewScaleFactor="3.96734" positionMode="0" positionLock="false" x="32.6581" y="21.6844" visibility="1" zValue="2" background="true" transparency="0" frameJoinStyle="miter" blendMode="0" width="147.531" outlineWidth="0.3" excludeFromExports="0" uuid="{d34748d4-2515-4711-bed7-8246b999961a}" height="158.789" itemRotation="0" frame="false" pagex="32.6581">
+    <FrameColor alpha="255" red="0" blue="0" green="0"/>
+    <BackgroundColor alpha="255" red="255" blue="255" green="255"/>
+    <customproperties/>
+   </ComposerItem>
+  </ComposerMap>
+  <customproperties/>
+ </Composition>
+</Composer>
