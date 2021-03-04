@@ -7,6 +7,14 @@ import geojson
 import json
 import psycopg2
 
+continent_infile = os.path.join(DATA_PATH, "area_of_interest/africa.geojson")
+continent_outfile = os.path.join(DATA_PATH, "query_answers/african_countries.geojson")
+geom_infile = os.path.join(DATA_PATH, "area_of_interest/australia.geojson")
+ohsome_outfiles = [os.path.join(DATA_PATH, "query_answers/settlements.geojson"),
+                   os.path.join(DATA_PATH, "query_answers/all_weather_roads.geojson")]
+result_outfile = os.path.join(DATA_PATH, "result.json")
+
+
 human_settlements = {
     "description":"Areas which indicate human cities",
     "endpoint": "elements/geometry",
@@ -63,7 +71,7 @@ def get_countries(continent_infile, continent_outfile):
         geojson.dump(countries, outfile)
 
     return countries
-
+get_countries(continent_infile, continent_outfile)
 
 def get_ohsome_data(geom_infile=None, ohsome_outfiles=None, feature=None):
     if geom_infile is not None:
@@ -293,17 +301,37 @@ def get_share_rural_population_within_2km_of_all_weather_road(drop_tables: bool)
     return result[0]
 
 
+def fill_result_into_countries(continent_outfile, result_file):
+    with open(continent_outfile, "r") as file:
+        countries = geojson.load(file)
+    with open(result_file, "r") as file:
+        result = json.load(file)
+    for feature in countries["features"]:
+        name = feature["properties"]["name"]
+        if name not in result.keys():
+            feature["properties"]["share_reachable_pop"] = -1
+            feature["properties"]["rural_pop"] = -1
+            feature["properties"]["reachable_pop"] = -1
+        else:
+            if result[name] is None:
+                feature["properties"]["share_reachable_pop"] = -1
+                feature["properties"]["rural_pop"] = -1
+                feature["properties"]["reachable_pop"] = -1
+            else:
+                feature["properties"]["share_reachable_pop"] = result[name]["share_reachable_pop"]
+                feature["properties"]["rural_pop"] = result[name]["rural_pop"]
+                feature["properties"]["reachable_pop"] = result[name]["reachable_pop "]
+    with open(continent_outfile, "w") as file:
+        json.dump(countries, file)
+
+fill_result_into_countries(os.path.join(DATA_PATH, "query_answers/african_countries.geojson"), os.path.join(DATA_PATH, "result.json"))
 def settlement_workflow(continent_workflow: bool = False, drop_tables: bool = False):
-    continent_infile = os.path.join(DATA_PATH, "area_of_interest/africa.geojson")
-    continent_outfile = os.path.join(DATA_PATH, "query_answers/african_countries.geojson")
-    geom_infile = os.path.join(DATA_PATH, "area_of_interest/australia.geojson")
-    ohsome_outfiles = [os.path.join(DATA_PATH, "query_answers/settlements.geojson"),
-                       os.path.join(DATA_PATH, "query_answers/all_weather_roads.geojson")]
+
     if continent_workflow:
         geom_infile=os.path.join(DATA_PATH, "area_of_interest/feature.geojson")
 
         countries = get_countries(continent_infile, continent_outfile)
-        with open(os.path.join(DATA_PATH, "result.json")) as file:
+        with open(result_outfile) as file:
             already_done_countries = json.load(file).keys()
         for feature in countries["features"]:
             country_name = feature["properties"]["name"]
@@ -339,6 +367,8 @@ def settlement_workflow(continent_workflow: bool = False, drop_tables: bool = Fa
             else:
                 result = None
             to_json("result.json", key=country_name, value=result)
+
+        fill_result_into_countries(continent_outfile, result_outfile)
     else:
         counter= 10
         counter = get_ohsome_data(geom_infile=geom_infile, ohsome_outfiles=ohsome_outfiles)
@@ -350,7 +380,7 @@ def settlement_workflow(continent_workflow: bool = False, drop_tables: bool = Fa
         get_all_reachable_pop(drop_tables)
         result=get_share_rural_population_within_2km_of_all_weather_road(drop_tables)
         print(result)
-settlement_workflow(continent_workflow=True, drop_tables=True)
+#settlement_workflow(continent_workflow=True, drop_tables=True)
 
 def get_table_as_geojson(tablename):
     result =get_bpolys_from_db(tablename)
