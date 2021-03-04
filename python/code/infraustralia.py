@@ -44,6 +44,7 @@ all_weather_roads = {
     "endpoint": "elements/geometry",
     "filter": """
         geometry:line 
+        and highway=*
         and highway!=footway and highway!=bridleway and highway!=steps 
         and highway!=path and highway!=sidewalk and highway!=cycleway
         and seasonal!=yes 
