@@ -9,7 +9,6 @@ import psycopg2
 
 continent_infile = os.path.join(DATA_PATH, "area_of_interest/africa.geojson")
 continent_outfile = os.path.join(DATA_PATH, "query_answers/african_countries.geojson")
-geom_infile = os.path.join(DATA_PATH, "area_of_interest/australia.geojson")
 ohsome_outfiles = [os.path.join(DATA_PATH, "query_answers/settlements.geojson"),
                    os.path.join(DATA_PATH, "query_answers/all_weather_roads.geojson")]
 result_outfile = os.path.join(DATA_PATH, "result.json")
@@ -47,7 +46,7 @@ all_weather_roads = {
         geometry:line 
         and highway!=footway and highway!=bridleway and highway!=steps 
         and highway!=path and highway!=sidewalk and highway!=cycleway
-        and seasonal!=no 
+        and seasonal!=yes 
         and surface in 
             (paved, asphalt, concrete, paving_stones,
             sett, cobblestone, unhewn_cobblestone, metal, wood) 
@@ -370,6 +369,7 @@ def settlement_workflow(continent_workflow: bool = False, drop_tables: bool = Fa
 
         fill_result_into_countries(continent_outfile, result_outfile)
     else:
+        geom_infile = os.path.join(DATA_PATH, "area_of_interest/australia.geojson")
         counter= 10
         counter = get_ohsome_data(geom_infile=geom_infile, ohsome_outfiles=ohsome_outfiles)
         upload_data(ohsome_outfiles=ohsome_outfiles, geom_infile=geom_infile, counter=counter, drop_tables=drop_tables)
